@@ -11,9 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BppSolvableInstance {
 
-  private BppGreedyAlgorithmType greedyAlgorithmType;
-
-  private BppLocalSearchType localSearchType;
+  private BppAlgorithm algorithm;
 
   private BppInstance instance;
+
+  public BppSolvableInstance(BppSolvableInstance solvableInstance) {
+    this.algorithm = solvableInstance.getAlgorithm();
+    this.instance = new BppInstance(solvableInstance.getInstance());
+  }
 }

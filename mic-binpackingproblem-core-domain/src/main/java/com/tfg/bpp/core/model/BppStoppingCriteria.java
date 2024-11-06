@@ -1,16 +1,15 @@
 package com.tfg.bpp.core.model;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppSolution {
+public class BppStoppingCriteria {
 
-  private List<BppBin> bins;
+  private int maxNumberIterations;
 }

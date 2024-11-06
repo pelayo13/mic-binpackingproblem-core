@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppAlgorithm {
+public class BppStrategyControlResult {
 
-  private BppGreedyAlgorithmType greedyAlgorithmType;
+  private BppInstance newSolution;
 
-  private BppLocalSearchAlgorithm localSearchAlgorithm;
+  private Integer numberEvaluatedNeighbors;
 }

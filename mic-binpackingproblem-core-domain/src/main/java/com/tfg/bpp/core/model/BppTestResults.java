@@ -16,6 +16,24 @@ public class BppTestResults {
 
   private double averageTardiness;
 
+  private double averageLateness;
+
+  private double averageMaximumLateness;
+
+  private double averageAvailableCapacity;
+
+  private double averageNumberIterations;
+
+  private double averageNumberNeighborsGenerated;
+
+  private Double averageNumberEvaluatedNeighbors;
+
+  private double standardDeviationFitness;
+
+  private double averageFitness;
+
+  private BppTestCaseResults bestCaseByFitness;
+
   private double averageSeconds;
 
   private BppAlgorithm algorithm;

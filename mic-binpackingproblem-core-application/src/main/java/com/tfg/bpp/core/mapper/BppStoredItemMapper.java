@@ -12,9 +12,11 @@ public interface BppStoredItemMapper {
     @Mapping(target = "tardiness", ignore = true)
     BppStoredItem toBppStoredItemWithoutTardiness(BppItem item);
 
+    BppItem toBppItem( BppStoredItem item);
+
     default BppStoredItem toBppStoredItem(BppItem item, Integer time) {
         BppStoredItem storedItem = this.toBppStoredItemWithoutTardiness(item);
-        storedItem.setTardinessByTime(time);
+        storedItem.setTimeMetrics(time);
 
         return storedItem;
     }

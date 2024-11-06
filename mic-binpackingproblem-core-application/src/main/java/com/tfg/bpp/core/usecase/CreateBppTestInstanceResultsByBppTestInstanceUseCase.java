@@ -4,25 +4,20 @@ import com.tfg.bpp.core.model.BppAlgorithm;
 import com.tfg.bpp.core.model.BppInstance;
 import com.tfg.bpp.core.model.BppItem;
 import com.tfg.bpp.core.model.BppSolvableInstance;
-import com.tfg.bpp.core.model.BppTestCaseResults;
 import com.tfg.bpp.core.model.BppTestInstance;
 import com.tfg.bpp.core.model.BppTestInstanceResults;
 import com.tfg.bpp.core.model.BppTestItemsResults;
 import com.tfg.bpp.core.model.BppTestResults;
-import com.tfg.bpp.core.port.inbound.usecase.CreateBppSolutionByBppSolvableInstanceUseCasePort;
-import com.tfg.bpp.core.port.inbound.usecase.CreateBppSolutionByBppSolvableInstanceUseCasePort.CreateBppSolutionByBppSolvableInstanceCommand;
-import com.tfg.bpp.core.port.inbound.usecase.CreateBppSolutionByBppSolvableInstanceUseCasePort.CreateBppSolutionByBppSolvableInstanceResponse;
 import com.tfg.bpp.core.port.inbound.usecase.CreateBppTestInstanceResultsByBppTestInstanceUseCasePort;
+import com.tfg.bpp.core.port.inbound.usecase.CreateBppTestResultsByBppInstanceUseCasePort.CreateBppTestResultsByBppInstanceCommand;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 @Service
 @Slf4j
@@ -30,11 +25,7 @@ import org.springframework.util.StopWatch;
 public class CreateBppTestInstanceResultsByBppTestInstanceUseCase
     implements CreateBppTestInstanceResultsByBppTestInstanceUseCasePort {
 
-  private static final String CLASS_NAME =
-      CreateBppTestInstanceResultsByBppTestInstanceUseCase.class.getName();
-
-  private final CreateBppSolutionByBppSolvableInstanceUseCasePort
-      createBppSolutionByBppSolvableInstanceUseCasePort;
+  private final CreateBppTestResultsByBppInstanceUseCase createBppTestResultsByBppInstanceUseCase;
 
   @Override
   public CreateBppTestInstanceResultsByBppTestInstanceResponse execute(
@@ -43,10 +34,8 @@ public class CreateBppTestInstanceResultsByBppTestInstanceUseCase
     BppTestInstance bppTestInstance =
         createBppSolutionsByBppSolvableInstancesCommand.getTestInstance();
 
-    StopWatch stopWatch = new StopWatch();
     List<BppTestItemsResults> testItemsResults = new ArrayList<>();
     List<BppTestResults> testResults = new ArrayList<>();
-    List<BppTestCaseResults> testCaseResults = new ArrayList<>();
 
     bppTestInstance
         .getNumberItems()
@@ -56,55 +45,18 @@ public class CreateBppTestInstanceResultsByBppTestInstanceUseCase
                   .getAlgorithms()
                   .forEach(
                       bppAlgorithm -> {
-                        IntStream.range(0, bppTestInstance.getNumberInstances())
-                            .forEach(
-                                repetition -> {
-                                  BppSolvableInstance instance =
-                                      this.buildSolvableInstanceByTestInstance(
-                                          bppTestInstance, numberItems, bppAlgorithm);
-                                  CreateBppSolutionByBppSolvableInstanceCommand command =
-                                      CreateBppSolutionByBppSolvableInstanceCommand.builder()
-                                          .solvableInstance(instance)
-                                          .build();
-
-                                  log.info(
-                                      "[start] {}.execute - numberItems: {}, algorithm: {}, repetition: {}",
-                                      CLASS_NAME,
-                                      numberItems,
-                                      bppAlgorithm,
-                                      repetition);
-                                  stopWatch.start();
-                                  CreateBppSolutionByBppSolvableInstanceResponse response =
-                                      this.createBppSolutionByBppSolvableInstanceUseCasePort
-                                          .execute(command);
-                                  stopWatch.stop();
-                                  log.info(
-                                      "[end] {}.execute - numberItems: {}, algorithm: {}, repetition: {}",
-                                      CLASS_NAME,
-                                      numberItems,
-                                      bppAlgorithm,
-                                      repetition);
-
-                                  testCaseResults.add(
-                                      BppTestCaseResults.builder()
-                                          .numberBins(response.getSolution().getBins().size())
-                                          .averageTardinessStoredItems(
-                                              response
-                                                  .getSolution()
-                                                  .getAverageTardinessStoredItems())
-                                          .seconds(stopWatch.getTotalTimeSeconds())
-                                          .build());
-                                });
+                        BppSolvableInstance instance =
+                            this.buildSolvableInstanceByTestInstance(
+                                bppTestInstance, numberItems, bppAlgorithm);
+                        CreateBppTestResultsByBppInstanceCommand command =
+                            CreateBppTestResultsByBppInstanceCommand.builder()
+                                .solvableInstance(instance)
+                                .build();
 
                         testResults.add(
-                            BppTestResults.builder()
-                                .averageNumberBins(this.getAverageNumberBins(testCaseResults))
-                                .averageTardiness(this.getAverageTardiness(testCaseResults))
-                                .averageSeconds(this.getAverageSeconds(testCaseResults))
-                                .algorithm(bppAlgorithm)
-                                .testCaseResults(new ArrayList<>(testCaseResults))
-                                .build());
-                        testCaseResults.clear();
+                            this.createBppTestResultsByBppInstanceUseCase
+                                .execute(command)
+                                .getTestResults());
                       });
 
               testItemsResults.add(
@@ -121,21 +73,6 @@ public class CreateBppTestInstanceResultsByBppTestInstanceUseCase
         .build();
   }
 
-  private double getAverageSeconds(List<BppTestCaseResults> testCaseResults) {
-    return testCaseResults.stream().mapToDouble(BppTestCaseResults::getSeconds).average().orElse(0);
-  }
-
-  private double getAverageTardiness(List<BppTestCaseResults> testCaseResults) {
-    return testCaseResults.stream()
-        .mapToDouble(BppTestCaseResults::getAverageTardinessStoredItems)
-        .average()
-        .orElse(0);
-  }
-
-  private double getAverageNumberBins(List<BppTestCaseResults> testCaseResults) {
-    return testCaseResults.stream().mapToInt(BppTestCaseResults::getNumberBins).average().orElse(0);
-  }
-
   private BppSolvableInstance buildSolvableInstanceByTestInstance(
       BppTestInstance bppTestInstance, Integer numberItems, BppAlgorithm bppAlgorithm) {
     return BppSolvableInstance.builder()
@@ -145,8 +82,11 @@ public class CreateBppTestInstanceResultsByBppTestInstanceUseCase
                 .items(this.buildItems(bppTestInstance, numberItems))
                 .bins(new ArrayList<>())
                 .build())
-        .greedyAlgorithmType(bppAlgorithm.getGreedyAlgorithmType())
-        .localSearchType(bppAlgorithm.getLocalSearchType())
+        .algorithm(
+            BppAlgorithm.builder()
+                .greedyAlgorithmType(bppAlgorithm.getGreedyAlgorithmType())
+                .localSearchAlgorithm(bppAlgorithm.getLocalSearchAlgorithm())
+                .build())
         .build();
   }
 

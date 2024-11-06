@@ -1,5 +1,6 @@
 package com.tfg.bpp.core.model;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppAlgorithm {
+public class BppNeighborhoodStructure {
 
-  private BppGreedyAlgorithmType greedyAlgorithmType;
-
-  private BppLocalSearchAlgorithm localSearchAlgorithm;
+  private List<BppNeighborhoodStructureOperation> bppNeighborhoodStructureOperations;
 }
