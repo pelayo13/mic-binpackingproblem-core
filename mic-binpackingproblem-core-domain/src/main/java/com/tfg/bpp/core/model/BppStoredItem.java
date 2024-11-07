@@ -24,16 +24,16 @@ public class BppStoredItem extends BppItem {
     this.tardiness = item.getTardiness();
   }
 
-  public void setTimeMetrics(int time) {
-    this.setLatenessByTime(time);
-    this.setTardinessByTime(time);
+  public void setTimeMetrics(int binInstant) {
+    this.setLatenessByTime(binInstant);
+    this.setTardinessByTime(binInstant);
   }
 
-  private void setLatenessByTime(int time) {
-    this.setLateness(time - Optional.ofNullable(this.getDueDate()).orElse(0));
+  private void setLatenessByTime(int binInstant) {
+    this.setLateness(binInstant - Optional.ofNullable(this.getDueDate()).orElse(0));
   }
 
-  private void setTardinessByTime(int time) {
-    this.setTardiness(Math.max(0, time - Optional.ofNullable(this.getDueDate()).orElse(0)));
+  private void setTardinessByTime(int binInstant) {
+    this.setTardiness(Math.max(0, binInstant - Optional.ofNullable(this.getDueDate()).orElse(0)));
   }
 }

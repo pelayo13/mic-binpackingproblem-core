@@ -93,7 +93,11 @@ public class StoredItemsInterchangeOperationService
                                                           .map(BppStoredItem::new)
                                                           .peek(
                                                               item ->
-                                                                  item.setTimeMetrics(indexFrom))
+                                                                  item.setTimeMetrics(
+                                                                      newNeighbor
+                                                                          .getBins()
+                                                                          .get(indexFrom)
+                                                                          .getFirstUseInstant()))
                                                           .collect(Collectors.toList()));
                                               newNeighbor
                                                   .getBins()
@@ -102,7 +106,9 @@ public class StoredItemsInterchangeOperationService
                                                       combinationFrom.stream()
                                                           .map(BppStoredItem::new)
                                                           .peek(
-                                                              item -> item.setTimeMetrics(indexTo))
+                                                              item -> item.setTimeMetrics(newNeighbor
+                                                                      .getBins()
+                                                                      .get(indexTo).getFirstUseInstant()))
                                                           .collect(Collectors.toList()));
 
                                               resultInstances.add(newNeighbor);

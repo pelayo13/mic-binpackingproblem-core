@@ -142,6 +142,9 @@ public interface BppAlgorithmGrpcMapper {
   @ValueMapping(
       target = "SMALLEST_OCCUPIED_CAPACITY",
       source = "BPP_BINS_SELECTION_FUNCTION_SMALLEST_OCCUPIED_CAPACITY")
+  @ValueMapping(
+          target = "BIGGEST_MAXIMUM_LATENESS",
+          source = "BPP_BINS_SELECTION_FUNCTION_BIGGEST_MAXIMUM_LATENESS")
   @ValueMapping(target = MappingConstants.NULL, source = "BPP_BINS_SELECTION_FUNCTION_UNSPECIFIED")
   @ValueMapping(target = MappingConstants.THROW_EXCEPTION, source = "UNRECOGNIZED")
   BppBinsSelectionFunction toBppBinsSelectionFunction(
@@ -294,6 +297,9 @@ public interface BppAlgorithmGrpcMapper {
   @ValueMapping(
       target = "BPP_BINS_SELECTION_FUNCTION_SMALLEST_OCCUPIED_CAPACITY",
       source = "SMALLEST_OCCUPIED_CAPACITY")
+  @ValueMapping(
+          target = "BPP_BINS_SELECTION_FUNCTION_BIGGEST_MAXIMUM_LATENESS",
+          source = "BIGGEST_MAXIMUM_LATENESS")
   @ValueMapping(
       target = "BPP_BINS_SELECTION_FUNCTION_UNSPECIFIED",
       source = MappingConstants.ANY_REMAINING)

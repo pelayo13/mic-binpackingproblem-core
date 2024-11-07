@@ -30,6 +30,8 @@ public class LocalSearchServiceImpl implements LocalSearchService {
     int numberNeighborsGenerated = 0;
     int numberOfIterations = 0;
     int numberEvaluatedNeighbors = 0;
+    evaluationFunctionResultsRecord.add(
+        localSearchAlgorithm.getBppEvaluationFunction().getValue(bppInstance));
 
     while (numberOfIterations
         < localSearchAlgorithm.getBppStopCriteria().getMaxNumberIterations()) {
@@ -58,8 +60,6 @@ public class LocalSearchServiceImpl implements LocalSearchService {
                   localSearchAlgorithm.getBppEvaluationFunction());
 
       BppInstance newSolution = bppStrategyControlResult.getNewSolution();
-      evaluationFunctionResultsRecord.add(
-          localSearchAlgorithm.getBppEvaluationFunction().getValue(newSolution));
       numberNeighborsGenerated = numberNeighborsGenerated + finalNeighbors.size();
       numberEvaluatedNeighbors =
           numberEvaluatedNeighbors + bppStrategyControlResult.getNumberEvaluatedNeighbors();
@@ -75,6 +75,8 @@ public class LocalSearchServiceImpl implements LocalSearchService {
             .numberEvaluatedNeighbors(numberEvaluatedNeighbors)
             .build();
       } else {
+        evaluationFunctionResultsRecord.add(
+            localSearchAlgorithm.getBppEvaluationFunction().getValue(newSolution));
         previousSolution = bppStrategyControlResult.getNewSolution();
       }
     }

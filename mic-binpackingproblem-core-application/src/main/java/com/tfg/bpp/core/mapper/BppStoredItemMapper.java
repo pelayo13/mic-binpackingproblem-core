@@ -14,9 +14,9 @@ public interface BppStoredItemMapper {
 
     BppItem toBppItem( BppStoredItem item);
 
-    default BppStoredItem toBppStoredItem(BppItem item, Integer time) {
+    default BppStoredItem toBppStoredItem(BppItem item, Integer binInstant) {
         BppStoredItem storedItem = this.toBppStoredItemWithoutTardiness(item);
-        storedItem.setTimeMetrics(time);
+        storedItem.setTimeMetrics(binInstant);
 
         return storedItem;
     }
