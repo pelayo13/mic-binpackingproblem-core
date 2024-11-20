@@ -2,52 +2,43 @@ package com.tfg.bpp.core.service.algorithm.greedy.impl;
 
 import com.tfg.bpp.core.mapper.BppStoredItemMapper;
 import com.tfg.bpp.core.model.BppBin;
-import com.tfg.bpp.core.model.BppDetailedSolution;
+import com.tfg.bpp.core.model.BppDetailsOfSolution;
 import com.tfg.bpp.core.model.BppGreedyAlgorithmType;
 import com.tfg.bpp.core.model.BppInstance;
 import com.tfg.bpp.core.model.BppItem;
-
+import com.tfg.bpp.core.service.algorithm.greedy.GreedyAlgorithmService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-
-import com.tfg.bpp.core.service.algorithm.greedy.GreedyAlgorithmService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 @Service(BppGreedyAlgorithmType.ServiceName.BEST_FIT_DECREASING)
-@Slf4j
 @RequiredArgsConstructor
 public class BestFitDecreasingGreedyAlgorithmService implements GreedyAlgorithmService {
 
   private final BppStoredItemMapper bppStoredItemMapper;
 
   @Override
-  public BppInstance getSolution(BppInstance bppInstance) {
+  public BppInstance getSolution(BppInstance instance) {
+    BppInstance bppInstance = new BppInstance(instance);
     bppInstance.getItems().sort((item1, item2) -> item2.getSize() - item1.getSize());
+    List<BppInstance> recordInstances =
+        Optional.ofNullable(bppInstance.getDetails())
+            .map(BppDetailsOfSolution::getRecordInstances)
+            .orElse(new ArrayList<>());
 
+    recordInstances.add(new BppInstance(bppInstance));
     while (!this.isSolution(bppInstance)) {
       this.nextInstance(bppInstance, bppInstance.getItems().get(0));
+      recordInstances.add(new BppInstance(bppInstance));
     }
+    bppInstance.setDetails(BppDetailsOfSolution.builder().recordInstances(recordInstances).build());
 
     return bppInstance;
-  }
-
-  @Override
-  public BppDetailedSolution getDetailedSolution(BppInstance bppInstance) {
-    bppInstance.getItems().sort((item1, item2) -> item2.getSize() - item1.getSize());
-    List<BppInstance> recordInstances = new ArrayList<>();
-
-    recordInstances.add(bppInstance);
-    while (!this.isSolution(bppInstance)) {
-      this.nextInstance(bppInstance, bppInstance.getItems().get(0));
-      recordInstances.add(bppInstance);
-    }
-
-    return BppDetailedSolution.builder().recordInstances(recordInstances).build();
   }
 
   private void nextInstance(BppInstance bppInstance, BppItem itemToStore) {
@@ -60,7 +51,7 @@ public class BestFitDecreasingGreedyAlgorithmService implements GreedyAlgorithmS
             bin -> {
               if (bin.canBeStored(List.of(itemToStore), bppInstance.getBinsCapacity())
                   && bin.getAvailableCapacity(bppInstance.getBinsCapacity()) - itemToStore.getSize()
-                      < bestFitCapacity.intValue()) {
+                      <= bestFitCapacity.intValue()) {
                 bestFitCapacity.set(
                     bin.getAvailableCapacity(bppInstance.getBinsCapacity())
                         - itemToStore.getSize());
@@ -70,8 +61,9 @@ public class BestFitDecreasingGreedyAlgorithmService implements GreedyAlgorithmS
     if (!ObjectUtils.isEmpty(binToStore.get())) {
       binToStore
           .get()
-          .addItem(this.bppStoredItemMapper.toBppStoredItem(itemToStore, binToStore.get().getFirstUseInstant()));
-      binToStore.get().recalculateMaximumLateness();
+          .addItem(
+              this.bppStoredItemMapper.toBppStoredItem(
+                  itemToStore, binToStore.get().getFirstUseInstant()));
     } else {
       this.addNewBin(bppInstance, itemToStore);
     }
@@ -80,19 +72,18 @@ public class BestFitDecreasingGreedyAlgorithmService implements GreedyAlgorithmS
   }
 
   private void addNewBin(BppInstance bppInstance, BppItem itemToStore) {
-    BppBin newBin = BppBin.builder()
+    BppBin newBin =
+        BppBin.builder()
             .items(
-                    new ArrayList<>(
-                            List.of(
-                                    this.bppStoredItemMapper.toBppStoredItem(
-                                            itemToStore, bppInstance.getBins().size()))))
+                new ArrayList<>(
+                    List.of(
+                        this.bppStoredItemMapper.toBppStoredItem(
+                            itemToStore, bppInstance.getBins().size()))))
             .occupiedCapacity(itemToStore.getSize())
             .build();
     newBin.setFirstUseInstant(bppInstance.getBins().size());
 
-    bppInstance
-            .getBins()
-            .add(newBin);
+    bppInstance.getBins().add(newBin);
   }
 
   private boolean isSolution(BppInstance bppInstance) {

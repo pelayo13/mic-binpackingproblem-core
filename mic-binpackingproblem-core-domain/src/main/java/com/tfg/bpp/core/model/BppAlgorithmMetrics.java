@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppTestResults {
+public class BppAlgorithmMetrics {
 
   private double averageNumberBins;
 
@@ -22,9 +22,9 @@ public class BppTestResults {
 
   private double averageAvailableCapacity;
 
-  private double averageNumberIterations;
+  private Double averageNumberIterations;
 
-  private double averageNumberNeighborsGenerated;
+  private Double averageNumberNeighborsGenerated;
 
   private Double averageNumberEvaluatedNeighbors;
 
@@ -32,11 +32,11 @@ public class BppTestResults {
 
   private double averageFitness;
 
-  private BppTestCaseResults bestCaseByFitness;
+  private BppTestCaseMetrics bestCaseByFitness;
 
   private double averageSeconds;
 
   private BppAlgorithm algorithm;
 
-  private List<BppTestCaseResults> testCaseResults;
+  private List<BppTestCaseMetrics> testCasesMetrics;
 }

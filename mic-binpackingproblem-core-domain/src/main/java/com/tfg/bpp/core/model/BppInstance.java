@@ -22,7 +22,7 @@ public class BppInstance {
 
   private int binsCapacity;
 
-  private List<BppInstance> instancesRecord;
+  private BppDetailsOfSolution details;
 
   public BppInstance(BppInstance instance) {
     this.items =
@@ -31,8 +31,10 @@ public class BppInstance {
             .collect(Collectors.toList());
     this.bins = instance.getBins().stream().map(BppBin::new).collect(Collectors.toList());
     this.binsCapacity = instance.getBinsCapacity();
-    this.instancesRecord =
-        Optional.ofNullable(instance.getInstancesRecord()).map(ArrayList::new).orElse(null);
+    this.details =
+        Optional.ofNullable(instance.getDetails())
+            .map(BppDetailsOfSolution::new)
+            .orElse(null);
   }
 
   public void removeBins(List<Integer> indexOfBins) {

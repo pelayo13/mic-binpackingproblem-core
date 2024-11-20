@@ -14,9 +14,4 @@ public class BppSolvableInstance {
   private BppAlgorithm algorithm;
 
   private BppInstance instance;
-
-  public BppSolvableInstance(BppSolvableInstance solvableInstance) {
-    this.algorithm = solvableInstance.getAlgorithm();
-    this.instance = new BppInstance(solvableInstance.getInstance());
-  }
 }

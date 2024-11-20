@@ -2,16 +2,15 @@ package com.tfg.bpp.core.service.algorithm.greedy.impl;
 
 import com.tfg.bpp.core.mapper.BppStoredItemMapper;
 import com.tfg.bpp.core.model.BppBin;
-import com.tfg.bpp.core.model.BppDetailedSolution;
+import com.tfg.bpp.core.model.BppDetailsOfSolution;
 import com.tfg.bpp.core.model.BppGreedyAlgorithmType;
 import com.tfg.bpp.core.model.BppInstance;
 import com.tfg.bpp.core.model.BppItem;
-
+import com.tfg.bpp.core.service.algorithm.greedy.GreedyAlgorithmService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
-
-import com.tfg.bpp.core.service.algorithm.greedy.GreedyAlgorithmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,33 +27,21 @@ public class RandomGreedyAlgorithmService implements GreedyAlgorithmService {
 
   @Override
   public BppInstance getSolution(BppInstance bppInstance) {
+    List<BppInstance> recordInstances =
+        Optional.ofNullable(bppInstance.getDetails())
+            .map(BppDetailsOfSolution::getRecordInstances)
+            .orElse(new ArrayList<>());
 
+    recordInstances.add(new BppInstance(bppInstance));
     while (!this.isSolution(bppInstance)) {
       int itemIndex = this.random.nextInt(bppInstance.getItems().size());
       BppItem itemToStore = bppInstance.getItems().get(itemIndex);
       this.nextInstance(bppInstance, itemToStore);
+      recordInstances.add(new BppInstance(bppInstance));
     }
+    bppInstance.setDetails(BppDetailsOfSolution.builder().recordInstances(recordInstances).build());
 
     return bppInstance;
-  }
-
-  @Override
-  public BppDetailedSolution getDetailedSolution(BppInstance bppInstance) {
-    List<BppInstance> recordInstances = new ArrayList<>();
-
-    recordInstances.add(bppInstance);
-    while (!this.isSolution(bppInstance)) {
-      int itemIndex = this.random.nextInt(bppInstance.getItems().size());
-      BppItem itemToStore = bppInstance.getItems().get(itemIndex);
-      this.nextInstance(bppInstance, itemToStore);
-      recordInstances.add(bppInstance);
-    }
-
-    return BppDetailedSolution.builder().recordInstances(recordInstances).build();
-  }
-
-  private boolean isSolution(BppInstance bppInstance) {
-    return bppInstance.getItems().isEmpty();
   }
 
   private void nextInstance(BppInstance bppInstance, BppItem itemToStore) {
@@ -92,18 +79,21 @@ public class RandomGreedyAlgorithmService implements GreedyAlgorithmService {
   }
 
   private void addNewBin(BppInstance bppInstance, BppItem itemToStore) {
-    BppBin newBin = BppBin.builder()
+    BppBin newBin =
+        BppBin.builder()
             .items(
-                    new ArrayList<>(
-                            List.of(
-                                    this.bppStoredItemMapper.toBppStoredItem(
-                                            itemToStore, bppInstance.getBins().size()))))
+                new ArrayList<>(
+                    List.of(
+                        this.bppStoredItemMapper.toBppStoredItem(
+                            itemToStore, bppInstance.getBins().size()))))
             .occupiedCapacity(itemToStore.getSize())
             .build();
     newBin.setFirstUseInstant(bppInstance.getBins().size());
 
-    bppInstance
-        .getBins()
-        .add(newBin);
+    bppInstance.getBins().add(newBin);
+  }
+
+  private boolean isSolution(BppInstance bppInstance) {
+    return bppInstance.getItems().isEmpty();
   }
 }

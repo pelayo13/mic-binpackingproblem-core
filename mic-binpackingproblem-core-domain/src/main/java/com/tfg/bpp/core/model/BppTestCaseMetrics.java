@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppTestCaseResults {
+public class BppTestCaseMetrics {
 
   private int numberBins;
 
@@ -23,9 +23,9 @@ public class BppTestCaseResults {
 
   private int availableCapacity;
 
-  private int numberIterations;
+  private Integer numberIterations;
 
-  private int numberNeighborsGenerated;
+  private Integer numberNeighborsGenerated;
 
   private Integer numberEvaluatedNeighbors;
 

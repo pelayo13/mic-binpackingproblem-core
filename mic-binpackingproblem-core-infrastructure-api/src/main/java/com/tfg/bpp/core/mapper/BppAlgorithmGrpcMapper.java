@@ -7,7 +7,6 @@ import com.tfg.bpp.core.model.BppBinsSelectionFunction;
 import com.tfg.bpp.core.model.BppEvaluationFunction;
 import com.tfg.bpp.core.model.BppGreedyAlgorithmType;
 import com.tfg.bpp.core.model.BppItemsInterchangeFunction;
-import com.tfg.bpp.core.model.BppItemsSelectionFunction;
 import com.tfg.bpp.core.model.BppLocalSearchAlgorithm;
 import com.tfg.bpp.core.model.BppNeighborhoodStructure;
 import com.tfg.bpp.core.model.BppNeighborhoodStructureOperation;
@@ -16,7 +15,6 @@ import com.tfg.bpp.core.model.BppReconstructionOperation;
 import com.tfg.bpp.core.model.BppStoredItemsAndFreeItemsInterchangeOperation;
 import com.tfg.bpp.core.model.BppStoredItemsInterchangeOperation;
 import com.tfg.bpp.core.model.BppStrategyControl;
-import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -28,7 +26,6 @@ import v1.model.BppBinsSelectionFunctionProto;
 import v1.model.BppEvaluationFunctionProto;
 import v1.model.BppGreedyAlgorithmTypeProto;
 import v1.model.BppItemsInterchangeFunctionProto;
-import v1.model.BppItemsSelectionFunctionProto;
 import v1.model.BppLocalSearchAlgorithmProto;
 import v1.model.BppNeighborhoodStructureOperationProto;
 import v1.model.BppNeighborhoodStructureOperationTypeProto;
@@ -55,9 +52,7 @@ public interface BppAlgorithmGrpcMapper {
   BppGreedyAlgorithmType toBppGreedyAlgorithmType(
       BppGreedyAlgorithmTypeProto.BppGreedyAlgorithmType bppGreedyAlgorithmTypeProto);
 
-  @Mapping(
-      target = "bppNeighborhoodStructures",
-      source = "bppNeighborhoodStructuresList")
+  @Mapping(target = "bppNeighborhoodStructures", source = "bppNeighborhoodStructuresList")
   BppLocalSearchAlgorithm toBppLocalSearch(
       BppLocalSearchAlgorithmProto.BppLocalSearchAlgorithm bppLocalSearchAlgorithmProto);
 
@@ -143,18 +138,12 @@ public interface BppAlgorithmGrpcMapper {
       target = "SMALLEST_OCCUPIED_CAPACITY",
       source = "BPP_BINS_SELECTION_FUNCTION_SMALLEST_OCCUPIED_CAPACITY")
   @ValueMapping(
-          target = "BIGGEST_MAXIMUM_LATENESS",
-          source = "BPP_BINS_SELECTION_FUNCTION_BIGGEST_MAXIMUM_LATENESS")
+      target = "BIGGEST_MAXIMUM_LATENESS",
+      source = "BPP_BINS_SELECTION_FUNCTION_BIGGEST_MAXIMUM_LATENESS")
   @ValueMapping(target = MappingConstants.NULL, source = "BPP_BINS_SELECTION_FUNCTION_UNSPECIFIED")
   @ValueMapping(target = MappingConstants.THROW_EXCEPTION, source = "UNRECOGNIZED")
   BppBinsSelectionFunction toBppBinsSelectionFunction(
       BppBinsSelectionFunctionProto.BppBinsSelectionFunction binsSelectionFunctionProto);
-
-  @ValueMapping(target = "BIGGEST_SIZE", source = "BPP_ITEMS_SELECTION_FUNCTION_BIGGEST_SIZE")
-  @ValueMapping(target = MappingConstants.NULL, source = "BPP_ITEMS_SELECTION_FUNCTION_UNSPECIFIED")
-  @ValueMapping(target = MappingConstants.THROW_EXCEPTION, source = "UNRECOGNIZED")
-  BppItemsSelectionFunction toBppItemsSelectionFunction(
-      BppItemsSelectionFunctionProto.BppItemsSelectionFunction bppItemsSelectionFunctionProto);
 
   @ValueMapping(target = "SIZE", source = "BPP_ITEMS_INTERCHANGE_FUNCTION_SIZE")
   @ValueMapping(target = "ALWAYS", source = "BPP_ITEMS_INTERCHANGE_FUNCTION_ALWAYS")
@@ -298,20 +287,13 @@ public interface BppAlgorithmGrpcMapper {
       target = "BPP_BINS_SELECTION_FUNCTION_SMALLEST_OCCUPIED_CAPACITY",
       source = "SMALLEST_OCCUPIED_CAPACITY")
   @ValueMapping(
-          target = "BPP_BINS_SELECTION_FUNCTION_BIGGEST_MAXIMUM_LATENESS",
-          source = "BIGGEST_MAXIMUM_LATENESS")
+      target = "BPP_BINS_SELECTION_FUNCTION_BIGGEST_MAXIMUM_LATENESS",
+      source = "BIGGEST_MAXIMUM_LATENESS")
   @ValueMapping(
       target = "BPP_BINS_SELECTION_FUNCTION_UNSPECIFIED",
       source = MappingConstants.ANY_REMAINING)
   BppBinsSelectionFunctionProto.BppBinsSelectionFunction toBppBinsSelectionFunctionProto(
       BppBinsSelectionFunction binsSelectionFunction);
-
-  @ValueMapping(target = "BPP_ITEMS_SELECTION_FUNCTION_BIGGEST_SIZE", source = "BIGGEST_SIZE")
-  @ValueMapping(
-      target = "BPP_ITEMS_SELECTION_FUNCTION_UNSPECIFIED",
-      source = MappingConstants.ANY_REMAINING)
-  BppItemsSelectionFunctionProto.BppItemsSelectionFunction toBppItemsSelectionFunctionProto(
-      BppItemsSelectionFunction bppItemsSelectionFunction);
 
   @ValueMapping(target = "BPP_ITEMS_INTERCHANGE_FUNCTION_SIZE", source = "SIZE")
   @ValueMapping(target = "BPP_ITEMS_INTERCHANGE_FUNCTION_ALWAYS", source = "ALWAYS")

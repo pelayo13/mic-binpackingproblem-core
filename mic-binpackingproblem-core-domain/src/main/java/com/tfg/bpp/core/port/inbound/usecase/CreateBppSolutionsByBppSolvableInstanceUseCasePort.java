@@ -9,18 +9,19 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-public interface CreateBppSolutionByBppSolvableInstanceUseCasePort {
+public interface CreateBppSolutionsByBppSolvableInstanceUseCasePort {
 
-  CreateBppSolutionByBppSolvableInstanceResponse execute(
+  CreateBppSolutionsByBppSolvableInstanceResponse execute(
       @Valid @NotNull
-          CreateBppSolutionByBppSolvableInstanceCommand
-              createBppSolutionByBppSolvableInstanceCommand);
+          CreateBppSolutionsByBppSolvableInstanceUseCasePort
+                  .CreateBppSolutionsByBppSolvableInstanceCommand
+              command);
 
   @Builder
   @Getter
   @EqualsAndHashCode
   @RequiredArgsConstructor
-  final class CreateBppSolutionByBppSolvableInstanceResponse {
+  final class CreateBppSolutionsByBppSolvableInstanceResponse {
 
     @NotNull private final BppSolution solution;
   }
@@ -29,7 +30,7 @@ public interface CreateBppSolutionByBppSolvableInstanceUseCasePort {
   @Getter
   @EqualsAndHashCode
   @RequiredArgsConstructor
-  final class CreateBppSolutionByBppSolvableInstanceCommand {
+  final class CreateBppSolutionsByBppSolvableInstanceCommand {
 
     @NotNull private final BppSolvableInstance solvableInstance;
   }

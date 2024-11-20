@@ -18,8 +18,6 @@ public class BppStoredItemsAndFreeItemsInterchangeOperation
 
   private int numberItemsToInterchangeTo;
 
-  private BppItemsSelectionFunction itemsFromSelectionFunction;
-
   private BppItemsInterchangeFunction itemsInterchangeFunction;
 
   private Integer numberInterchanges;

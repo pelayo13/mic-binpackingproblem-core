@@ -73,6 +73,7 @@ public class LocalSearchServiceImpl implements LocalSearchService {
             .evaluationFunctionResultsRecords(evaluationFunctionResultsRecord)
             .numberNeighborsGenerated(numberNeighborsGenerated)
             .numberEvaluatedNeighbors(numberEvaluatedNeighbors)
+            .details(newSolution.getDetails())
             .build();
       } else {
         evaluationFunctionResultsRecord.add(
